@@ -11,7 +11,7 @@
     <TetrahedronSetTopologyModifier/>
     <Hexa2TetraTopologicalMapping input="@grid" output="@topology" swapping="1" />
 
-    <SVKElasticForcefield youngModulus="3000" poissonRatio="0.3" topology="@topology" />
+    <SVKElasticForcefield_FEniCS youngModulus="3000" poissonRatio="0.3" topology="@topology" />
 
     <BoxROI name="fixed_roi" box="-7.5 -7.5 -0.9 7.5 7.5 0.1" />
     <FixedConstraint indices="@fixed_roi.indices" />

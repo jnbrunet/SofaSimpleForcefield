@@ -1,0 +1,7 @@
+/home/arnaud/dev/sofa/plugins/SofaSimpleForceField/lib/cmake/SofaSimpleForcefield/SofaSimpleForcefieldTargets.cmake
+/home/arnaud/dev/sofa/plugins/SofaSimpleForceField/lib/cmake/SofaSimpleForcefield/SofaSimpleForcefieldTargets-release.cmake
+/home/arnaud/dev/sofa/plugins/SofaSimpleForceField/lib/cmake/SofaSimpleForcefield/SofaSimpleForcefieldConfigVersion.cmake
+/home/arnaud/dev/sofa/plugins/SofaSimpleForceField/lib/cmake/SofaSimpleForcefield/SofaSimpleForcefieldConfig.cmake
+/home/arnaud/dev/sofa/plugins/SofaSimpleForceField/lib/libSofaSimpleForcefield.so.1.0
+/home/arnaud/dev/sofa/plugins/SofaSimpleForceField/lib/libSofaSimpleForcefield.so
+/home/arnaud/dev/sofa/plugins/SofaSimpleForceField/./README.md

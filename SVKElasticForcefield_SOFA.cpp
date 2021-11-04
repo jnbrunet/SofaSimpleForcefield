@@ -1,8 +1,8 @@
-#include "SVKElasticForcefield.h"
+#include "SVKElasticForcefield_SOFA.h"
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/visual/VisualParams.h>
 
-SVKElasticForcefield::SVKElasticForcefield()
+SVKElasticForcefield_SOFA::SVKElasticForcefield_SOFA()
 : d_youngModulus(initData(&d_youngModulus,
                           Real(1000), "youngModulus",
                           "Young's modulus of the material",
@@ -16,7 +16,7 @@ SVKElasticForcefield::SVKElasticForcefield()
 {
 }
 
-void SVKElasticForcefield::init() {
+void SVKElasticForcefield_SOFA::init() {
     using Mat33 = Eigen::Matrix<double, 3, 3>;
     ForceField::init();
 
@@ -64,7 +64,7 @@ void SVKElasticForcefield::init() {
     }
 }
 
-double SVKElasticForcefield::getPotentialEnergy(const sofa::core::MechanicalParams *,
+double SVKElasticForcefield_SOFA::getPotentialEnergy(const sofa::core::MechanicalParams *,
                                                               const Data<sofa::type::vector<Coord>> & d_x) const {
     using Mat33 = Eigen::Matrix<double, 3, 3>;
 
@@ -126,7 +126,7 @@ double SVKElasticForcefield::getPotentialEnergy(const sofa::core::MechanicalPara
     return Psi;
 }
 
-void SVKElasticForcefield::addForce(const sofa::core::MechanicalParams */*mparams*/,
+void SVKElasticForcefield_SOFA::addForce(const sofa::core::MechanicalParams */*mparams*/,
                                                   Data<sofa::type::vector<Deriv>> &d_f,
                                                   const Data<sofa::type::vector<Coord>> &d_x,
                                                   const Data<sofa::type::vector<Deriv>> &/*d_v*/) {
@@ -199,7 +199,7 @@ void SVKElasticForcefield::addForce(const sofa::core::MechanicalParams */*mparam
     }
 }
 
-void SVKElasticForcefield::addKToMatrix(sofa::defaulttype::BaseMatrix * matrix,
+void SVKElasticForcefield_SOFA::addKToMatrix(sofa::defaulttype::BaseMatrix * matrix,
                                                       double kFact,
                                                       unsigned int & offset) {
     using Mat33 = Eigen::Matrix<double, 3, 3>;
@@ -318,13 +318,13 @@ void SVKElasticForcefield::addKToMatrix(sofa::defaulttype::BaseMatrix * matrix,
     }
 }
 
-void SVKElasticForcefield::addDForce(const sofa::core::MechanicalParams * /*mparams*/,
-                                     SVKElasticForcefield::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_df*/,
-                                     const SVKElasticForcefield::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_dx*/) {
+void SVKElasticForcefield_SOFA::addDForce(const sofa::core::MechanicalParams * /*mparams*/,
+                                     SVKElasticForcefield_SOFA::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_df*/,
+                                     const SVKElasticForcefield_SOFA::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_dx*/) {
     // Here you would compute df = K*dx
 }
 
-void SVKElasticForcefield::draw(const sofa::core::visual::VisualParams *vparams) {
+void SVKElasticForcefield_SOFA::draw(const sofa::core::visual::VisualParams *vparams) {
     if (!this->mstate.get() || !d_topology_container.get()) {
         return;
     }
@@ -389,7 +389,7 @@ void SVKElasticForcefield::draw(const sofa::core::visual::VisualParams *vparams)
     vparams->drawTool()->restoreLastState();
 }
 
-void SVKElasticForcefield::computeBBox(const sofa::core::ExecParams * /*params*/, bool onlyVisible) {
+void SVKElasticForcefield_SOFA::computeBBox(const sofa::core::ExecParams * /*params*/, bool onlyVisible) {
     using namespace sofa::core::objectmodel;
 
     if (!onlyVisible) return;
@@ -416,4 +416,4 @@ void SVKElasticForcefield::computeBBox(const sofa::core::ExecParams * /*params*/
 using sofa::core::RegisterObject;
 [[maybe_unused]]
 static int _c_ = RegisterObject("Simple implementation of a Saint-Venant-Kirchhoff force field for tetrahedral meshes.")
- .add<SVKElasticForcefield>();
+ .add<SVKElasticForcefield_SOFA>();

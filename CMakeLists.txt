@@ -6,7 +6,7 @@ find_package(Eigen3 REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(${PROJECT_NAME} SHARED init.cpp SVKElasticForcefield.cpp)
+add_library(${PROJECT_NAME} SHARED init.cpp SVKElasticForcefield_SOFA.cpp SVKElasticForcefield_FEniCS.cpp hyperelasticity.c)
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Core Eigen3::Eigen)
 
 sofa_create_package_with_targets(

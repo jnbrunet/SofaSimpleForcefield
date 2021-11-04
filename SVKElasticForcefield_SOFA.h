@@ -6,9 +6,9 @@
 #include "Tetrahedron.h"
 
 
-class SVKElasticForcefield : public sofa::core::behavior::ForceField<sofa::defaulttype::Vec3Types> {
+class SVKElasticForcefield_SOFA : public sofa::core::behavior::ForceField<sofa::defaulttype::Vec3Types> {
 public:
-    SOFA_CLASS(SVKElasticForcefield, SOFA_TEMPLATE(sofa::core::behavior::ForceField, sofa::defaulttype::Vec3Types));
+    SOFA_CLASS(SVKElasticForcefield_SOFA, SOFA_TEMPLATE(sofa::core::behavior::ForceField, sofa::defaulttype::Vec3Types));
 
     // Aliases
     using Element = Tetrahedron;
@@ -18,7 +18,7 @@ public:
     using Data = sofa::core::objectmodel::Data<T>;
 
     template <typename ObjectType>
-    using Link = sofa::core::objectmodel::SingleLink<SVKElasticForcefield, ObjectType, sofa::core::objectmodel::BaseLink::FLAG_STRONGLINK>;
+    using Link = sofa::core::objectmodel::SingleLink<SVKElasticForcefield_SOFA, ObjectType, sofa::core::objectmodel::BaseLink::FLAG_STRONGLINK>;
 
     // Data structures
 
@@ -29,7 +29,7 @@ public:
     };
 
     // public methods
-    SVKElasticForcefield();
+    SVKElasticForcefield_SOFA();
 
     /**
      * Initialize the forcefield by pre-computing the derivative of the shape function at each
