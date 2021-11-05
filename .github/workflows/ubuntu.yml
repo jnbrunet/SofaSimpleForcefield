@@ -74,9 +74,7 @@ jobs:
           cmake
           -DCMAKE_PREFIX_PATH=$SOFA_ROOT/lib/cmake 
           -DCMAKE_INSTALL_PREFIX=$SOFA_ROOT/plugins/SofaSimpleForceField 
-          -DCMAKE_BUILD_TYPE=Release 
-          -S $SSFF_SRC 
-          -B $SSFF_SRC/build
+          -DCMAKE_BUILD_TYPE=Release -S $SSFF_SRC -B $SSFF_SRC/build .
           && cmake --build $SSFF_SRC/build -j4 && cmake --install $SSFF_SRC/build
           
 
