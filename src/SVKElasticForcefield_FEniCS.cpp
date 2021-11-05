@@ -1,7 +1,7 @@
 #include "SVKElasticForcefield_FEniCS.h"
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/visual/VisualParams.h>
-#include "hyperelasticity.h"
+#include "../fenics/hyperelasticity.h"
 
 SVKElasticForcefield_FEniCS::SVKElasticForcefield_FEniCS()
 : d_youngModulus(initData(&d_youngModulus,
