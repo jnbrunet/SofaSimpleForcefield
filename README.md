@@ -36,3 +36,6 @@ $SOFA_ROOT/bin/runSofa -l SofaSimpleForceField $SSFF_SRC/cantilever_beam.scn
 
 ## Result
 ![image](https://user-images.githubusercontent.com/6951981/127413110-76fb452e-723b-4e74-b3ac-5952d54d663d.png)
+
+## SOFA Week 2021 presentation slides
+https://docs.google.com/presentation/d/1IilG7QVBciP1qHR0bZ5opFlZvQbmStXUiH2ERznvnoE/edit?usp=sharing
