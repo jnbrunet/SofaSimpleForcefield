@@ -23,7 +23,7 @@ typedef double ufc_scalar_t;
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ufc.h"
+#include <ufc.h>
 
 // Code for element element_39c9f9a46a1e147d68060aea877cb63c830e361c
 

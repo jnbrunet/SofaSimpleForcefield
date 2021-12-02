@@ -20,7 +20,7 @@
 #pragma once
 
 typedef double ufc_scalar_t;
-#include "ufc.h"
+#include <ufc.h>
 
 #ifdef __cplusplus
 extern "C" {

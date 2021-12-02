@@ -6,6 +6,8 @@ find_package(Eigen3 REQUIRED)
 
 set(CMAKE_CXX_STANDARD 17)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/fenics)
+
 add_library(${PROJECT_NAME} SHARED src/init.cpp src/SVKElasticForcefield_SOFA.cpp src/SVKElasticForcefield_FEniCS.cpp fenics/hyperelasticity.c)
 target_link_libraries(${PROJECT_NAME} PUBLIC Sofa.Core Eigen3::Eigen)
 
