@@ -7,6 +7,8 @@ residual and jacobian of a Saint-Venant-Kirchhoff material assembled
 on linear tetrahedral meshes. These three function will be used 
 by the system assembler and ODE solvers of SOFA.
 
+![example workflow](https://github.com/Ziemnono/LandmarkTracking_RGBD/actions/workflows/ubuntu.yml/badge.svg)
+
 ### To use FEniCS
 ```console
 docker run -ti -v $(pwd):/root dolfinx/dolfinx:latest
