@@ -1,8 +1,9 @@
 #include "SVKElasticForcefield_SOFA_Tetra_Order2.h"
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/visual/VisualParams.h>
+#include <iostream>
 
-SVKElasticForcefield_SOFA::SVKElasticForcefield_SOFA()
+SVKElasticForcefield_SOFA_Tetra_Order2::SVKElasticForcefield_SOFA_Tetra_Order2()
 : d_youngModulus(initData(&d_youngModulus,
                           Real(1000), "youngModulus",
                           "Young's modulus of the material",
@@ -16,16 +17,55 @@ SVKElasticForcefield_SOFA::SVKElasticForcefield_SOFA()
 {
 }
 
-void SVKElasticForcefield_SOFA::init() {
+void SVKElasticForcefield_SOFA_Tetra_Order2::init() {
     using Mat33 = Eigen::Matrix<double, 3, 3>;
     ForceField::init();
 
-    if (!this->mstate.get() || !d_topology_container.get()) {
-        msg_error() << "Both a mechanical object and a topology container are required";
-    }
+//    auto *context = this->getContext();
+
+//    if (not d_topology_container.get()) {
+//        // No topology specified. Try to find one suitable.
+//        auto caribou_containers = context->template getObjects<CaribouTopology>(
+//                BaseContext::Local);
+//        auto sofa_containers = context->template getObjects<BaseMeshTopology>(BaseContext::Local);
+//        std::vector<BaseMeshTopology *> sofa_compatible_containers;
+//        for (auto container : sofa_containers) {
+//            if (CaribouTopology::mesh_is_compatible(container)) {
+//                sofa_compatible_containers.push_back(container);
+//            }
+//        }
+//        if (caribou_containers.empty() and sofa_compatible_containers.empty()) {
+//            msg_warning() << "Could not find a topology container in the current context. "
+//                          << "Please add a compatible one in the current context or set the "
+//                          << "container's path using the '" << d_topology_container.getName()
+//                          << "' data parameter.";
+//        } else {
+//            if (caribou_containers.size() + sofa_compatible_containers.size() > 1) {
+//                msg_warning() << "Multiple topologies were found in the context node. "
+//                              << "Please specify which one contains the elements on "
+//                              << "which this force field will be applied "
+//                              << "by explicitly setting the container's path in the  '"
+//                              << d_topology_container.getName() << "' data parameter.";
+//            } else {
+//                // Prefer caribou's containers first
+//                if (not caribou_containers.empty()) {
+//                    d_topology_container.set(caribou_containers[0]);
+//                } else {
+//                    d_topology_container.set(sofa_compatible_containers[0]);
+//                }
+//            }
+
+//            msg_info() << "Automatically found the topology '" << d_topology_container.get()->getPathName()
+//                       << "'.";
+//        }
+
+//    if (!this->mstate.get() || !d_topology_container.get()) {
+//        msg_error() << "Both a mechanical object and a topology container are required";
+//    }
 
     auto * state = this->mstate.get();
     auto * topology = d_topology_container.get();
+
 
     // Convert SOFA position vector to an Eigen matrix (nx3 for n nodes)
     const auto sofa_x0 = state->readRestPositions();
@@ -64,7 +104,7 @@ void SVKElasticForcefield_SOFA::init() {
     }
 }
 
-double SVKElasticForcefield_SOFA::getPotentialEnergy(const sofa::core::MechanicalParams *,
+double SVKElasticForcefield_SOFA_Tetra_Order2::getPotentialEnergy(const sofa::core::MechanicalParams *,
                                                               const Data<sofa::type::vector<Coord>> & d_x) const {
     using Mat33 = Eigen::Matrix<double, 3, 3>;
 
@@ -126,7 +166,7 @@ double SVKElasticForcefield_SOFA::getPotentialEnergy(const sofa::core::Mechanica
     return Psi;
 }
 
-void SVKElasticForcefield_SOFA::addForce(const sofa::core::MechanicalParams */*mparams*/,
+void SVKElasticForcefield_SOFA_Tetra_Order2::addForce(const sofa::core::MechanicalParams */*mparams*/,
                                                   Data<sofa::type::vector<Deriv>> &d_f,
                                                   const Data<sofa::type::vector<Coord>> &d_x,
                                                   const Data<sofa::type::vector<Deriv>> &/*d_v*/) {
@@ -199,7 +239,7 @@ void SVKElasticForcefield_SOFA::addForce(const sofa::core::MechanicalParams */*m
     }
 }
 
-void SVKElasticForcefield_SOFA::addKToMatrix(sofa::defaulttype::BaseMatrix * matrix,
+void SVKElasticForcefield_SOFA_Tetra_Order2::addKToMatrix(sofa::defaulttype::BaseMatrix * matrix,
                                                       double kFact,
                                                       unsigned int & offset) {
     using Mat33 = Eigen::Matrix<double, 3, 3>;
@@ -318,13 +358,13 @@ void SVKElasticForcefield_SOFA::addKToMatrix(sofa::defaulttype::BaseMatrix * mat
     }
 }
 
-void SVKElasticForcefield_SOFA::addDForce(const sofa::core::MechanicalParams * /*mparams*/,
-                                     SVKElasticForcefield_SOFA::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_df*/,
-                                     const SVKElasticForcefield_SOFA::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_dx*/) {
+void SVKElasticForcefield_SOFA_Tetra_Order2::addDForce(const sofa::core::MechanicalParams * /*mparams*/,
+                                     SVKElasticForcefield_SOFA_Tetra_Order2::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_df*/,
+                                     const SVKElasticForcefield_SOFA_Tetra_Order2::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_dx*/) {
     // Here you would compute df = K*dx
 }
 
-void SVKElasticForcefield_SOFA::draw(const sofa::core::visual::VisualParams *vparams) {
+void SVKElasticForcefield_SOFA_Tetra_Order2::draw(const sofa::core::visual::VisualParams *vparams) {
     if (!this->mstate.get() || !d_topology_container.get()) {
         return;
     }
@@ -389,7 +429,7 @@ void SVKElasticForcefield_SOFA::draw(const sofa::core::visual::VisualParams *vpa
     vparams->drawTool()->restoreLastState();
 }
 
-void SVKElasticForcefield_SOFA::computeBBox(const sofa::core::ExecParams * /*params*/, bool onlyVisible) {
+void SVKElasticForcefield_SOFA_Tetra_Order2::computeBBox(const sofa::core::ExecParams * /*params*/, bool onlyVisible) {
     using namespace sofa::core::objectmodel;
 
     if (!onlyVisible) return;
@@ -416,4 +456,4 @@ void SVKElasticForcefield_SOFA::computeBBox(const sofa::core::ExecParams * /*par
 using sofa::core::RegisterObject;
 [[maybe_unused]]
 static int _c_ = RegisterObject("Simple implementation of a Saint-Venant-Kirchhoff force field for tetrahedral meshes.")
- .add<SVKElasticForcefield_SOFA>();
+ .add<SVKElasticForcefield_SOFA_Tetra_Order2>();
