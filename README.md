@@ -7,7 +7,8 @@ residual and jacobian of a Saint-Venant-Kirchhoff material assembled
 on linear tetrahedral meshes. These three function will be used 
 by the system assembler and ODE solvers of SOFA.
 
-![example workflow](https://github.com/Ziemnono/SofaSimpleForceField_FEniCS//actions/workflows/ubuntu.yml/badge.svg)
+![example workflow](https://github.com/Ziemnono/SofaSimpleForceField_FEniCS//actions/workflows/ubuntu-v21-06-02.yml/badge.svg)
+![example workflow](https://github.com/Ziemnono/SofaSimpleForceField_FEniCS//actions/workflows/ubuntu-main.yml/badge.svg)
 
 ### To use FEniCS
 ```console
