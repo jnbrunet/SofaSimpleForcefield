@@ -26,8 +26,6 @@ jobs:
         include:
         - sofa_version: master
           CONTAINER: ziemnono/sofasimpleforcefield_fenics:latest
-        - sofa_version: v21.06.02
-          CONTAINER: ziemnono/sofasimpleforcefield_fenics:latest
     
     env:
       SOFA_VERSION: ${{ matrix.sofa_version }}
