@@ -1,4 +1,4 @@
-name: Ubuntu
+name: ubuntu-v21-06-02
 
 # Controls when the workflow will run
 on:
@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sofa_version: [v21.06.02, master ]
+        sofa_version: [v21.06.02]
         include:
         - sofa_version: master
           CONTAINER: ziemnono/sofasimpleforcefield_fenics:latest
