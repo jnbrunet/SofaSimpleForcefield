@@ -49,8 +49,10 @@ def createScene(root):
     root.addObject('BoxROI', name="fixed_roi", box="-7.5 -7.5 -0.9 7.5 7.5 0.1")
     root.addObject('FixedConstraint', indices="@fixed_roi.indices")
     root.addObject('BoxROI', name="top_roi", box="-7.5 -7.5 79.9 7.5 7.5 80.1")
-    root.addObject('TriangleSetGeometryAlgorithms')
-    root.addObject('TrianglePressureForceField', pressure="0 -10 0", topology="@topology", triangleList="@top_roi.triangleIndices", showForces="1")
+    # root.addObject('TriangleSetGeometryAlgorithms')
+    # root.addObject('TrianglePressureForceField', pressure="0 -10 0", topology="@topology", triangleList="@top_roi.triangleIndices", showForces="1")
+    root.addObject('ConstantForceField', force="0 -10 0", indices="@top_roi.indices")
+
 
     return root
 
