@@ -3,22 +3,22 @@
 #include <sofa/core/behavior/ForceField.h>
 #include <sofa/core/topology/BaseTopology.h>
 #include <Eigen/Eigen>
-#include "Tetrahedron.h"
+#include "Hexahedron.h"
 
 
-class SVKElasticForcefield_FEniCS : public sofa::core::behavior::ForceField<sofa::defaulttype::Vec3Types> {
+class SVKElasticForcefield_FEniCS_Hexa : public sofa::core::behavior::ForceField<sofa::defaulttype::Vec3Types> {
 public:
-    SOFA_CLASS(SVKElasticForcefield_FEniCS, SOFA_TEMPLATE(sofa::core::behavior::ForceField, sofa::defaulttype::Vec3Types));
+    SOFA_CLASS(SVKElasticForcefield_FEniCS_Hexa, SOFA_TEMPLATE(sofa::core::behavior::ForceField, sofa::defaulttype::Vec3Types));
 
     // Aliases
-    using Element = Tetrahedron;
+    using Element = Hexahedron;
     using Coord = sofa::type::Vec3;
 
     template <class T>
     using Data = sofa::core::objectmodel::Data<T>;
 
     template <typename ObjectType>
-    using Link = sofa::core::objectmodel::SingleLink<SVKElasticForcefield_FEniCS, ObjectType, sofa::core::objectmodel::BaseLink::FLAG_STRONGLINK>;
+    using Link = sofa::core::objectmodel::SingleLink<SVKElasticForcefield_FEniCS_Hexa, ObjectType, sofa::core::objectmodel::BaseLink::FLAG_STRONGLINK>;
 
     // Data structures
 
@@ -29,7 +29,7 @@ public:
     };
 
     // public methods
-    SVKElasticForcefield_FEniCS();
+    SVKElasticForcefield_FEniCS_Hexa();
 
     /**
      * Initialize the forcefield by pre-computing the derivative of the shape function at each

@@ -1,10 +1,10 @@
-#include "SVKElasticForcefield_FEniCS.h"
+#include "SVKElasticForcefield_FEniCS_Hexa.h"
 #include <sofa/core/ObjectFactory.h>
 #include <sofa/core/visual/VisualParams.h>
-#include "../fenics/SaintVenantKirchhoff_Tetra.h"
+#include "../fenics/SaintVenantKirchhoff_Hexa.h"
 #include <iostream>
 
-SVKElasticForcefield_FEniCS::SVKElasticForcefield_FEniCS()
+SVKElasticForcefield_FEniCS_Hexa::SVKElasticForcefield_FEniCS_Hexa()
 : d_youngModulus(initData(&d_youngModulus,
                           Real(1000), "youngModulus",
                           "Young's modulus of the material",
@@ -18,7 +18,7 @@ SVKElasticForcefield_FEniCS::SVKElasticForcefield_FEniCS()
 {
 }
 
-void SVKElasticForcefield_FEniCS::init() {
+void SVKElasticForcefield_FEniCS_Hexa::init() {
     ForceField::init();
 
     if (!this->mstate.get() || !d_topology_container.get()) {
@@ -26,7 +26,7 @@ void SVKElasticForcefield_FEniCS::init() {
     }
 }
 
-double SVKElasticForcefield_FEniCS::getPotentialEnergy(const sofa::core::MechanicalParams *,
+double SVKElasticForcefield_FEniCS_Hexa::getPotentialEnergy(const sofa::core::MechanicalParams *,
                                                               const Data<sofa::type::vector<Coord>> & d_x) const {
     using Mat33 = Eigen::Matrix<double, 3, 3>;
 
@@ -50,12 +50,12 @@ double SVKElasticForcefield_FEniCS::getPotentialEnergy(const sofa::core::Mechani
 
     // Convert the node index vector from SOFA to an Eigen matrix (nxm for n elements of m nodes each)
     Eigen::Map<const Eigen::Matrix<sofa::Index, Eigen::Dynamic, Element::NumberOfNodes, Eigen::RowMajor>> node_indices (
-            topology->getTetras().data()->data(), topology->getNbTetrahedra(), Element::NumberOfNodes
+            topology->getHexas().data()->data(), topology->getNbHexahedra(), Element::NumberOfNodes
     );
 
     double Psi = 0.;
 
-    const auto nb_elements = topology->getNbTetrahedra();
+    const auto nb_elements = topology->getNbHexahedra();
     for (Eigen::Index element_id = 0; element_id < nb_elements; ++element_id) {
         // Position vector of each of the element nodes
         Eigen::Matrix<double, Element::NumberOfNodes, 3, Eigen::RowMajor> node_positions;
@@ -89,7 +89,7 @@ double SVKElasticForcefield_FEniCS::getPotentialEnergy(const sofa::core::Mechani
     return Psi;
 }
 
-void SVKElasticForcefield_FEniCS::addForce(const sofa::core::MechanicalParams */*mparams*/,
+void SVKElasticForcefield_FEniCS_Hexa::addForce(const sofa::core::MechanicalParams */*mparams*/,
                                                   Data<sofa::type::vector<Deriv>> &d_f,
                                                   const Data<sofa::type::vector<Coord>> &d_x,
                                                   const Data<sofa::type::vector<Deriv>> &/*d_v*/) {
@@ -106,9 +106,9 @@ void SVKElasticForcefield_FEniCS::addForce(const sofa::core::MechanicalParams */
 
 
     //    FEniCs variables
-    const int geometric_dimension= form_SaintVenantKirchhoff_Tetra_F->finite_elements[0]->geometric_dimension;
-    const int space_dimension= form_SaintVenantKirchhoff_Tetra_F->finite_elements[0]->space_dimension;
-    const int num_element_support_dofs = form_SaintVenantKirchhoff_Tetra_F->dofmaps[0]->num_element_support_dofs;
+    const int geometric_dimension= form_SaintVenantKirchhoff_Hexa_F->finite_elements[0]->geometric_dimension;
+    const int space_dimension= form_SaintVenantKirchhoff_Hexa_F->finite_elements[0]->space_dimension;
+    const int num_element_support_dofs = form_SaintVenantKirchhoff_Hexa_F->dofmaps[0]->num_element_support_dofs;
 
     Eigen::Matrix <double, 1, Eigen::Dynamic, Eigen::RowMajor> F_local(1, space_dimension);
     Eigen::Matrix <double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> coefficients(num_element_support_dofs, geometric_dimension);
@@ -116,7 +116,7 @@ void SVKElasticForcefield_FEniCS::addForce(const sofa::core::MechanicalParams */
 
     // Get the single cell integral
     const ufc_integral *integral =
-        form_SaintVenantKirchhoff_Tetra_F->integrals(ufc_integral_type::cell)[0];
+        form_SaintVenantKirchhoff_Hexa_F->integrals(ufc_integral_type::cell)[0];
 
 
     // Convert SOFA input rest position vector to an Eigen matrix (nx3 for n nodes)
@@ -136,11 +136,11 @@ void SVKElasticForcefield_FEniCS::addForce(const sofa::core::MechanicalParams */
 
     // Convert the node index vector from SOFA to an Eigen matrix (nxm for n elements of m nodes each)
     Eigen::Map<const Eigen::Matrix<sofa::Index, Eigen::Dynamic, Element::NumberOfNodes, Eigen::RowMajor>> node_indices (
-            topology->getTetras().data()->data(), topology->getNbTetrahedra(), Element::NumberOfNodes
+            topology->getHexas().data()->data(), topology->getNbHexahedra(), Element::NumberOfNodes
     );
 
     // Assemble the residual vector
-    const auto nb_elements = topology->getNbTetrahedra();
+    const auto nb_elements = topology->getNbHexahedra();
     for (Eigen::Index element_id = 0; element_id < nb_elements; ++element_id) {
 
         // Position vector of each of the element nodes
@@ -159,7 +159,7 @@ void SVKElasticForcefield_FEniCS::addForce(const sofa::core::MechanicalParams */
     }
 }
 
-void SVKElasticForcefield_FEniCS::addKToMatrix(sofa::defaulttype::BaseMatrix * matrix,
+void SVKElasticForcefield_FEniCS_Hexa::addKToMatrix(sofa::defaulttype::BaseMatrix * matrix,
                                                       double kFact,
                                                       unsigned int & offset) {
 
@@ -173,16 +173,16 @@ void SVKElasticForcefield_FEniCS::addKToMatrix(sofa::defaulttype::BaseMatrix * m
     const auto  young_modulus = d_youngModulus.getValue();
 
     //    FEniCs variables
-    const int geometric_dimension= form_SaintVenantKirchhoff_Tetra_J->finite_elements[0]->geometric_dimension;
-    const int space_dimension= form_SaintVenantKirchhoff_Tetra_J->finite_elements[0]->space_dimension;
-    const int num_element_support_dofs = form_SaintVenantKirchhoff_Tetra_J->dofmaps[0]->num_element_support_dofs;
+    const int geometric_dimension= form_SaintVenantKirchhoff_Hexa_J->finite_elements[0]->geometric_dimension;
+    const int space_dimension= form_SaintVenantKirchhoff_Hexa_J->finite_elements[0]->space_dimension;
+    const int num_element_support_dofs = form_SaintVenantKirchhoff_Hexa_J->dofmaps[0]->num_element_support_dofs;
     Eigen::Matrix <double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> K_local(space_dimension, space_dimension);
     Eigen::Matrix <double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> coefficients(num_element_support_dofs, geometric_dimension);
     const ufc_scalar_t constants[2] = {young_modulus, poisson_ratio};
 
     // Get the single cell integral
     const ufc_integral *integral =
-        form_SaintVenantKirchhoff_Tetra_J->integrals(ufc_integral_type::cell)[0];
+        form_SaintVenantKirchhoff_Hexa_J->integrals(ufc_integral_type::cell)[0];
 
     // Convert SOFA input rest position vector to an Eigen matrix (nx3 for n nodes)
     auto sofa_x0 = this->mstate->readRestPositions();
@@ -197,11 +197,11 @@ void SVKElasticForcefield_FEniCS::addKToMatrix(sofa::defaulttype::BaseMatrix * m
 
     // Convert the node index vector from SOFA to an Eigen matrix (nxm for n elements of m nodes each)
     Eigen::Map<const Eigen::Matrix<sofa::Index, Eigen::Dynamic, Element::NumberOfNodes, Eigen::RowMajor>> node_indices (
-            topology->getTetras().data()->data(), topology->getNbTetrahedra(), Element::NumberOfNodes
+            topology->getHexas().data()->data(), topology->getNbHexahedra(), Element::NumberOfNodes
     );
 
     // Assemble the stiffness matrix
-    const auto nb_elements = topology->getNbTetrahedra();
+    const auto nb_elements = topology->getNbHexahedra();
     for (Eigen::Index element_id = 0; element_id < nb_elements; ++element_id) {
 
         // Position vector of each of the element nodes
@@ -237,70 +237,185 @@ void SVKElasticForcefield_FEniCS::addKToMatrix(sofa::defaulttype::BaseMatrix * m
     }
 }
 
-void SVKElasticForcefield_FEniCS::addDForce(const sofa::core::MechanicalParams * /*mparams*/,
-                                     SVKElasticForcefield_FEniCS::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_df*/,
-                                     const SVKElasticForcefield_FEniCS::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_dx*/) {
+void SVKElasticForcefield_FEniCS_Hexa::addDForce(const sofa::core::MechanicalParams * /*mparams*/,
+                                     SVKElasticForcefield_FEniCS_Hexa::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_df*/,
+                                     const SVKElasticForcefield_FEniCS_Hexa::Data<sofa::type::vector<sofa::type::Vec3>> & /*d_dx*/) {
     // Here you would compute df = K*dx
 }
 
-void SVKElasticForcefield_FEniCS::draw(const sofa::core::visual::VisualParams *vparams) {
-    if (!this->mstate.get() || !d_topology_container.get()) {
-        return;
-    }
-
-    if (!vparams->displayFlags().getShowForceFields()) {
-        return;
-    }
-
-    auto * state = this->mstate.get();
+void SVKElasticForcefield_FEniCS_Hexa::draw(const sofa::core::visual::VisualParams *vparams) {
     auto * topology = d_topology_container.get();
+    if (!topology)
+        return;
+
+    if (!vparams->displayFlags().getShowForceFields())
+        return;
+
+    vparams->drawTool()->saveLastState();
+
+    if (vparams->displayFlags().getShowWireFrame())
+        vparams->drawTool()->setPolygonMode(0,true);
 
     vparams->drawTool()->disableLighting();
-    const auto x = state->readPositions();
 
-    std::vector< sofa::type::Vec<3, double> > points[4];
-    const auto number_of_elements = topology->getNbTetrahedra();
-    for (sofa::core::topology::Topology::TetrahedronID i = 0 ; i<number_of_elements;++i) {
-        const auto t=topology->getTetra(i);
+    const VecCoord& x = this->mstate->read(sofa::core::ConstVecCoordId::position())->getValue();
 
-        const auto & a = t[0];
-        const auto & b = t[1];
-        const auto & c = t[2];
-        const auto & d = t[3];
-        Coord center = (x[a]+x[b]+x[c]+x[d])*0.125;
-        Coord pa = (x[a]+center)*(Real)0.666667;
-        Coord pb = (x[b]+center)*(Real)0.666667;
-        Coord pc = (x[c]+center)*(Real)0.666667;
-        Coord pd = (x[d]+center)*(Real)0.666667;
+    std::vector< sofa::type::Vector3 > points[6];
+    const auto number_of_elements = topology->getNbHexahedra();
+    for (std::size_t hexa_id = 0; hexa_id < number_of_elements; ++hexa_id) {
+        const auto & node_indices = topology->getHexahedron(static_cast<sofa::Index>(hexa_id));
+
+        auto a = node_indices[0];
+        auto b = node_indices[1];
+        auto d = node_indices[3];
+        auto c = node_indices[2];
+        auto e = node_indices[4];
+        auto f = node_indices[5];
+        auto h = node_indices[7];
+        auto g = node_indices[6];
+
+
+        Coord center = (x[a]+x[b]+x[c]+x[d]+x[e]+x[g]+x[f]+x[h])*0.125;
+        Real percentage = 0.15;
+        Coord pa = x[a]-(x[a]-center)*percentage;
+        Coord pb = x[b]-(x[b]-center)*percentage;
+        Coord pc = x[c]-(x[c]-center)*percentage;
+        Coord pd = x[d]-(x[d]-center)*percentage;
+        Coord pe = x[e]-(x[e]-center)*percentage;
+        Coord pf = x[f]-(x[f]-center)*percentage;
+        Coord pg = x[g]-(x[g]-center)*percentage;
+        Coord ph = x[h]-(x[h]-center)*percentage;
+
+
 
         points[0].push_back(pa);
         points[0].push_back(pb);
         points[0].push_back(pc);
+        points[0].push_back(pa);
+        points[0].push_back(pc);
+        points[0].push_back(pd);
 
-        points[1].push_back(pb);
-        points[1].push_back(pc);
-        points[1].push_back(pd);
+        points[1].push_back(pe);
+        points[1].push_back(pf);
+        points[1].push_back(pg);
+        points[1].push_back(pe);
+        points[1].push_back(pg);
+        points[1].push_back(ph);
 
         points[2].push_back(pc);
         points[2].push_back(pd);
-        points[2].push_back(pa);
+        points[2].push_back(ph);
+        points[2].push_back(pc);
+        points[2].push_back(ph);
+        points[2].push_back(pg);
 
-        points[3].push_back(pd);
         points[3].push_back(pa);
         points[3].push_back(pb);
+        points[3].push_back(pf);
+        points[3].push_back(pa);
+        points[3].push_back(pf);
+        points[3].push_back(pe);
+
+        points[4].push_back(pa);
+        points[4].push_back(pd);
+        points[4].push_back(ph);
+        points[4].push_back(pa);
+        points[4].push_back(ph);
+        points[4].push_back(pe);
+
+        points[5].push_back(pb);
+        points[5].push_back(pc);
+        points[5].push_back(pg);
+        points[5].push_back(pb);
+        points[5].push_back(pg);
+        points[5].push_back(pf);
     }
 
-    sofa::type::RGBAColor face_colors[4] = {
-            {1.0, 0.0, 0.0, 1.0},
-            {1.0, 0.0, 0.5, 1.0},
-            {1.0, 1.0, 0.0, 1.0},
-            {1.0, 0.5, 1.0, 1.0}
-    };
+    vparams->drawTool()->drawTriangles(points[0], sofa::type::RGBAColor(0.7f,0.7f,0.1f,1.0f));
+    vparams->drawTool()->drawTriangles(points[1], sofa::type::RGBAColor(0.7f,0.0f,0.0f,1.0f));
+    vparams->drawTool()->drawTriangles(points[2], sofa::type::RGBAColor(0.0f,0.7f,0.0f,1.0f));
+    vparams->drawTool()->drawTriangles(points[3], sofa::type::RGBAColor(0.0f,0.0f,0.7f,1.0f));
+    vparams->drawTool()->drawTriangles(points[4], sofa::type::RGBAColor(0.1f,0.7f,0.7f,1.0f));
+    vparams->drawTool()->drawTriangles(points[5], sofa::type::RGBAColor(0.7f,0.1f,0.7f,1.0f));
 
-    vparams->drawTool()->drawTriangles(points[0], face_colors[0]);
-    vparams->drawTool()->drawTriangles(points[1], face_colors[1]);
-    vparams->drawTool()->drawTriangles(points[2], face_colors[2]);
-    vparams->drawTool()->drawTriangles(points[3], face_colors[3]);
+
+    std::vector< sofa::type::Vector3 > ignored_points[6];
+    for (std::size_t hexa_id = 0; hexa_id < number_of_elements; ++hexa_id) {
+        const auto & node_indices = topology->getHexahedron(static_cast<sofa::Index>(hexa_id));
+
+        auto a = node_indices[0];
+        auto b = node_indices[1];
+        auto d = node_indices[3];
+        auto c = node_indices[2];
+        auto e = node_indices[4];
+        auto f = node_indices[5];
+        auto h = node_indices[7];
+        auto g = node_indices[6];
+
+
+        Coord center = (x[a]+x[b]+x[c]+x[d]+x[e]+x[g]+x[f]+x[h])*0.125;
+        Real percentage = 0.15;
+        Coord pa = x[a]-(x[a]-center)*percentage;
+        Coord pb = x[b]-(x[b]-center)*percentage;
+        Coord pc = x[c]-(x[c]-center)*percentage;
+        Coord pd = x[d]-(x[d]-center)*percentage;
+        Coord pe = x[e]-(x[e]-center)*percentage;
+        Coord pf = x[f]-(x[f]-center)*percentage;
+        Coord pg = x[g]-(x[g]-center)*percentage;
+        Coord ph = x[h]-(x[h]-center)*percentage;
+
+
+
+        ignored_points[0].push_back(pa);
+        ignored_points[0].push_back(pb);
+        ignored_points[0].push_back(pc);
+        ignored_points[0].push_back(pa);
+        ignored_points[0].push_back(pc);
+        ignored_points[0].push_back(pd);
+
+        ignored_points[1].push_back(pe);
+        ignored_points[1].push_back(pf);
+        ignored_points[1].push_back(pg);
+        ignored_points[1].push_back(pe);
+        ignored_points[1].push_back(pg);
+        ignored_points[1].push_back(ph);
+
+        ignored_points[2].push_back(pc);
+        ignored_points[2].push_back(pd);
+        ignored_points[2].push_back(ph);
+        ignored_points[2].push_back(pc);
+        ignored_points[2].push_back(ph);
+        ignored_points[2].push_back(pg);
+
+        ignored_points[3].push_back(pa);
+        ignored_points[3].push_back(pb);
+        ignored_points[3].push_back(pf);
+        ignored_points[3].push_back(pa);
+        ignored_points[3].push_back(pf);
+        ignored_points[3].push_back(pe);
+
+        ignored_points[4].push_back(pa);
+        ignored_points[4].push_back(pd);
+        ignored_points[4].push_back(ph);
+        ignored_points[4].push_back(pa);
+        ignored_points[4].push_back(ph);
+        ignored_points[4].push_back(pe);
+
+        ignored_points[5].push_back(pb);
+        ignored_points[5].push_back(pc);
+        ignored_points[5].push_back(pg);
+        ignored_points[5].push_back(pb);
+        ignored_points[5].push_back(pg);
+        ignored_points[5].push_back(pf);
+    }
+
+    vparams->drawTool()->drawTriangles(ignored_points[0], sofa::type::RGBAColor(0.49f,0.49f,0.49f,0.3f));
+    vparams->drawTool()->drawTriangles(ignored_points[1], sofa::type::RGBAColor(0.49f,0.49f,0.49f,0.3f));
+    vparams->drawTool()->drawTriangles(ignored_points[2], sofa::type::RGBAColor(0.49f,0.49f,0.49f,0.3f));
+    vparams->drawTool()->drawTriangles(ignored_points[3], sofa::type::RGBAColor(0.49f,0.49f,0.49f,0.3f));
+    vparams->drawTool()->drawTriangles(ignored_points[4], sofa::type::RGBAColor(0.49f,0.49f,0.49f,0.3f));
+    vparams->drawTool()->drawTriangles(ignored_points[5], sofa::type::RGBAColor(0.49f,0.49f,0.49f,0.3f));
+
 
     if (vparams->displayFlags().getShowWireFrame())
         vparams->drawTool()->setPolygonMode(0,false);
@@ -308,7 +423,7 @@ void SVKElasticForcefield_FEniCS::draw(const sofa::core::visual::VisualParams *v
     vparams->drawTool()->restoreLastState();
 }
 
-void SVKElasticForcefield_FEniCS::computeBBox(const sofa::core::ExecParams * /*params*/, bool onlyVisible) {
+void SVKElasticForcefield_FEniCS_Hexa::computeBBox(const sofa::core::ExecParams * /*params*/, bool onlyVisible) {
     using namespace sofa::core::objectmodel;
 
     if (!onlyVisible) return;
@@ -335,4 +450,4 @@ void SVKElasticForcefield_FEniCS::computeBBox(const sofa::core::ExecParams * /*p
 using sofa::core::RegisterObject;
 [[maybe_unused]]
 static int _c_ = RegisterObject("Simple implementation of a Saint-Venant-Kirchhoff force field for tetrahedral meshes.")
- .add<SVKElasticForcefield_FEniCS>();
+ .add<SVKElasticForcefield_FEniCS_Hexa>();
